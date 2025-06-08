@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bi-Weekly Finance Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f9fc;
+      --card-bg: rgba(30, 41, 59, 0.5);
+      --primary: #3b82f6; /* A nice blue */
+      --primary-hover: #60a5fa;
+      --text-primary: #f1f5f9; /* Off-white */
+      --text-secondary: #94a3b8; /* Slate 400 */
+      --border: rgba(255, 255, 255, 0.2);
+      --radius: 1rem; /* 16px */
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.wallpaperscraft.com/image/single/rocks_mountains_beach_1405689_3840x2400.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .container {
+      max-width: 850px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-align: center;
+      color: #ffffff;
+      margin-bottom: 2rem;
+      letter-spacing: -0.025em;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: transform var(--transition), box-shadow var(--transition), background-color var(--transition);
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      background: rgba(30, 41, 59, 0.7);
+    }
+    .card h2 {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    .card p {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0;
+      color: var(--primary);
+    }
+    
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .flex {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+    }
+    label {
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    input[type="checkbox"] {
+      width: 1.25rem;
+      height: 1.25rem;
+      cursor: pointer;
+      accent-color: var(--primary);
+      border: 1px solid var(--border);
+    }
+    input[type="number"], input[type="text"] {
+      padding: 0.65rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: all var(--transition);
+      background: rgba(0,0,0,0.2);
+      color: var(--text-primary);
+      flex-grow: 1;
+    }
+    input:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      border-color: transparent;
+      background: rgba(0,0,0,0.3);
+    }
+    button {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+    button:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+    }
+    thead {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    th, td {
+      padding: 1rem 0.75rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+    }
+    tr:last-child td { border-bottom: none; }
+    
+    details {
+        margin-bottom: 1.5rem;
+    }
+    details > summary {
+      font-weight: 600;
+      font-size: 1.25rem;
+      color: var(--text-primary);
+      cursor: pointer;
+      margin-bottom: 1rem;
+      position: relative;
+      padding-left: 2rem;
+      list-style: none;
+      transition: color var(--transition);
+    }
+    details > summary:hover {
+        color: var(--primary);
+    }
+    details > summary::-webkit-details-marker { display: none; }
+    details > summary::before {
+      content: '►';
+      position: absolute;
+      left: 0;
+      font-size: 1rem;
+      top: 50%;
+      transform: translateY(-50%) rotate(0deg);
+      transition: transform var(--transition);
+      color: var(--primary);
+    }
+    details[open] > summary::before {
+      transform: translateY(-50%) rotate(90deg);
+    }
+    
+    #log {
+      max-height: 250px;
+      overflow-y: auto;
+      background: #111827; /* A dark color */
+      color: #d1d5db; /* Light gray */
+      padding: 1.5rem;
+      font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+      font-size: 0.875rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    #log p { margin-bottom: 0.5rem; }
+    #log p:last-child { margin-bottom: 0; }
+    
+    .quick-action-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .quick-action-row label {
+      flex-shrink: 0;
+    }
+    .quick-action-row input {
+      flex-grow: 1;
+      min-width: 0; /* Allow input to shrink below its default size */
+    }
+    .quick-action-row button {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.8);
+      display: none; /* Initially hidden */
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(8px);
+    }
+    .modal-content {
+      max-width: 500px;
+      width: calc(100% - 2rem);
+      animation: modal-fade-in 0.3s var(--transition);
+      padding: 2rem;
+    }
+    @keyframes modal-fade-in {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-content h2 {
+        font-size: 1.5rem;
+        color: var(--text-primary);
+        text-transform: none;
+        letter-spacing: normal;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+    .modal-content > p {
+        text-align: center;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+    .modal-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    .modal-form label {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+    }
+    .modal-form input {
+        width: 100%;
+    }
+    .modal-form hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 0.5rem 0;
+    }
+    .modal-form p {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: -0.5rem;
+    }
+    
+    @media (max-width: 600px) {
+      .container { padding: 0 1rem; margin-top: 2rem; }
+      h1 { font-size: 2rem; }
+      .status-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+      .card { padding: 1rem; }
+      button { width: 100%; }
+      .flex { flex-direction: column; align-items: stretch; }
+      input[type="number"], input[type="text"] { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div id="initial-values-modal" class="modal-overlay">
+    <div class="modal-content card">
+      <h2>Welcome to Finance Tracker!</h2>
+      <p>Let's get started by setting up your initial financial values.</p>
+      <div class="modal-form">
+          <label>Current Total Debt: <input type="number" id="init-debt" value="3000"></label>
+          <label>Current Bank Balance: <input type="number" id="init-balance" value="3200"></label>
+          <label>Emergency Fund Target: <input type="number" id="init-emergency-target" value="2500"></label>
+          <hr/>
+          <p>Set your default bi-weekly values:</p>
+          <label>Salary: <input type="number" id="init-salary" value="700"></label>
+          <label>Living Expenses: <input type="number" id="init-living" value="200"></label>
+          <label>Debt Repayment: <input type="number" id="init-debt-repayment" value="300"></label>
+      </div>
+      <button id="btn-init-start">Start Tracking</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Finance Tracker</h1>
+
+    <!-- Main Stuff -->
+    <div class="status-grid">
+      <div class="card"><h2>Period</h2><p><span id="status-period">0</span></p></div>
+      <div class="card"><h2>Balance</h2><p>$<span id="status-balance">0</span></p></div>
+      <div class="card"><h2>Debt</h2><p>$<span id="status-debt">0</span></p></div>
+      <div class="card"><h2>Emergency</h2><p>$<span id="status-emergency">0</span></p></div>
+    </div>
+    <div class="controls-grid">
+      <div class="card">
+        <h2>Update</h2>
+        <div class="flex">
+          <label><input type="checkbox" id="update-paid" checked> Received Salary</label>
+          <button id="btn-update">Run Update</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Quick Actions</h2>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="quick-action-row">
+            <label for="adjust-amount">Adjust:</label>
+            <input type="number" id="adjust-amount" placeholder="±"/>
+            <button id="btn-adjust">Apply</button>
+          </div>
+          <div class="quick-action-row">
+            <label for="emergency-amount">Emergency:</label>
+            <input type="number" id="emergency-amount" placeholder="amount"/>
+            <button id="btn-emergency">Handle</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estimations -->
+    <details>
+      <summary>Estimations</summary>
+      <div class="card controls-grid">
+        <div>
+          <h2>To Debt Free</h2>
+          <p><span id="est-clear">–</span> periods</p>
+        </div>
+        <div>
+          <h2>Save Time</h2>
+          <div class="flex">
+            <label>Target:<input type="number" id="est-target" placeholder="5000"></label>
+            <button id="btn-est-save">Estimate</button>
+          </div>
+          <p><span id="est-save">–</span> periods</p>
+        </div>
+      </div>
+    </details>
+
+    <!-- History Log -->
+    <details>
+      <summary>History Log</summary>
+      <div class="card">
+        <table>
+          <thead>
+            <tr><th>Period/Event</th><th>Earned</th><th>Living</th><th>Balance</th><th>Debt</th><th>Emergency</th></tr>
+          </thead>
+          <tbody id="history-body"></tbody>
+        </table>
+      </div>
+    </details>
+
+    <!-- Settings -->
+    <details>
+      <summary>Settings</summary>
+      <div class="card">
+        <h2>Defaults Input</h2>
+        <div class="flex">
+          <label>Salary:<input type="number" id="def-salary"></label>
+          <label>Living:<input type="number" id="def-living"></label>
+          <label>Debt Pay:<input type="number" id="def-debt"></label>
+          <label>Emergency Target:<input type="number" id="def-emergency"></label>
+        </div>
+        <button id="btn-set-defaults">Set Defaults</button>
+      </div>
+      <br/>
+      <div class="card">
+        <h2>Schedule Change</h2>
+        <div class="flex">
+          <label>Period #:<input type="number" id="sched-period"></label>
+          <label>Salary:<input type="number" id="sched-salary"></label>
+          <label>Living:<input type="number" id="sched-living"></label>
+          <label>Debt Pay:<input type="number" id="sched-debt"></label>
+          <label>Emergency:<input type="number" id="sched-emergency"></label>
+        </div>
+        <button id="btn-schedule-change">Schedule Change</button>
+      </div>
+    </details>
+
+    <!-- Activity Log -->
+    <details>
+      <summary>Activity Log</summary>
+      <div id="log" class="card"></div>
+    </details>
+  </div>
+
+  <script>
+    // State variables
+    let totalDebt = 3000;
+    let salaryDefault = 700;
+    let debtRepaymentDefault = 300;
+    let livingExpenseDefault = 200;
+    let emergencyFundTarget = 2500;
+    let emergencyFund = emergencyFundTarget;
+    let bankBalance = 3200 - emergencyFund;
+    let payPeriodCount = 0;
+    let history = [];
+    let scheduledDefaultChanges = [];
+
+    // UI Helpers
+    const logEl = document.getElementById('log');
+    function appendLog(msg) {
+      const p = document.createElement('p');
+      p.textContent = msg;
+      logEl.appendChild(p);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+    function updateStatus() {
+      document.getElementById('status-period').textContent = payPeriodCount;
+      document.getElementById('status-balance').textContent = bankBalance.toFixed(0);
+      document.getElementById('status-debt').textContent = totalDebt.toFixed(0);
+      document.getElementById('status-emergency').textContent = emergencyFund.toFixed(0);
+    }
+    function updateDefaultsDisplay() {
+      // This function is no longer needed with the new UI, but we keep it
+      // in case it's used by scheduled changes logic.
+    }
+    function updateHistory() {
+      const tb = document.getElementById('history-body');
+      tb.innerHTML = '';
+      history.forEach(entry => {
+        const tr = document.createElement('tr');
+        entry.forEach(val => {
+          const td = document.createElement('td');
+          td.textContent = typeof val === 'number' ? val.toFixed(0) : val;
+          tr.appendChild(td);
+        });
+        tb.appendChild(tr);
+      });
+    }
+
+    // Estimator functions
+    function timeToClearDebt() {
+      return totalDebt <= 0 ? 0 : Math.ceil(totalDebt / debtRepaymentDefault);
+    }
+    function timeToSave(target) {
+      if (target <= bankBalance) return 0;
+      const payment = Math.min(debtRepaymentDefault, totalDebt, salaryDefault - livingExpenseDefault);
+      const net = salaryDefault - livingExpenseDefault - payment;
+      return net > 0 ? Math.ceil((target - bankBalance) / net) : Infinity;
+    }
+
+    // Core financial functions
+    function receiveSalary(amount) { bankBalance += amount; }
+    function handleLivingExpense(amount) {
+      if (amount > bankBalance) {
+        const shortage = amount - bankBalance;
+        totalDebt += shortage;
+        appendLog(`Shortfall $${shortage}`);
+        bankBalance = 0;
+      } else {
+        bankBalance -= amount;
+      }
+    }
+    function repayDebt(amount) {
+      if (totalDebt <= 0) {
+        appendLog('Debt free');
+        return;
+      }
+      const payment = Math.min(amount, bankBalance, totalDebt);
+      if (!payment) {
+        appendLog('No funds');
+        return;
+      }
+      bankBalance -= payment;
+      totalDebt -= payment;
+      appendLog(`Repaid $${payment}`);
+    }
+    function refillEmergency() {
+      const need = emergencyFundTarget - emergencyFund;
+      if (need > 0) {
+        const take = Math.min(bankBalance, need);
+        bankBalance -= take;
+        emergencyFund += take;
+        appendLog(`Refilled $${take}`);
+      }
+    }
+
+    // Apply scheduled default changes
+    function applyScheduledChanges() {
+      scheduledDefaultChanges = scheduledDefaultChanges.filter(item => {
+        if (item.period === payPeriodCount) {
+          Object.entries(item.changes).forEach(([key, val]) => {
+            window[key] = val;
+            appendLog(`Default ${key}=${val}`);
+          });
+          updateDefaultsDisplay();
+          return false;
+        }
+        return true;
+      });
+    }
+
+    // Bi-weekly update
+    function biweeklyUpdate(getsPaid) {
+      payPeriodCount++;
+      appendLog(`-- Period ${payPeriodCount} --`);
+      applyScheduledChanges();
+      let earned = 0;
+      if (getsPaid) {
+        earned = salaryDefault;
+        receiveSalary(salaryDefault);
+        appendLog(`Earned $${salaryDefault}`);
+      } else {
+        appendLog('Missed Salary');
+      }
+      handleLivingExpense(livingExpenseDefault);
+      repayDebt(debtRepaymentDefault);
+      refillEmergency();
+      history.push([payPeriodCount, earned, livingExpenseDefault, bankBalance, totalDebt, emergencyFund]);
+      updateStatus();
+      updateHistory();
+      document.getElementById('est-clear').textContent = timeToClearDebt();
+    }
+
+    // Quick actions
+    function adjust() {
+      const amt = parseFloat(document.getElementById('adjust-amount').value) || 0;
+      bankBalance += amt;
+      appendLog(`Adjusted $${amt}`);
+      history.push(['adj', 0, 0, bankBalance, totalDebt, emergencyFund]);
+      updateStatus();
+      updateHistory();
+    }
+    function handleEmergency() {
+      const amt = parseFloat(document.getElementById('emergency-amount').value) || 0;
+      appendLog(`Emergency $${amt}`);
+      let rem = amt;
+      const fromBank = Math.min(bankBalance, rem);
+      bankBalance -= fromBank;
+      rem -= fromBank;
+      appendLog(`-Bank $${fromBank}`);
+      const fromEmergency = Math.min(emergencyFund, rem);
+      emergencyFund -= fromEmergency;
+      rem -= fromEmergency;
+      appendLog(`-Emergency $${fromEmergency}`);
+      if (rem) {
+        totalDebt += rem;
+        appendLog(`+Debt $${rem}`);
+      }
+      refillEmergency();
+      repayDebt(debtRepaymentDefault);
+      history.push(['emg', 0, 0, bankBalance, totalDebt, emergencyFund]);
+      updateStatus();
+      updateHistory();
+      document.getElementById('est-clear').textContent = timeToClearDebt();
+    }
+
+    // Settings
+    function setDefaults() {
+      const s = document.getElementById('def-salary').value;
+      if (s) salaryDefault = parseFloat(s);
+      const l = document.getElementById('def-living').value;
+      if (l) livingExpenseDefault = parseFloat(l);
+      const d = document.getElementById('def-debt').value;
+      if (d) debtRepaymentDefault = parseFloat(d);
+      const e = document.getElementById('def-emergency').value;
+      if (e) emergencyFundTarget = parseFloat(e);
+      appendLog('Defaults updated');
+      updateDefaultsDisplay();
+      updateStatus();
+    }
+    function scheduleChange() {
+      const p = parseInt(document.getElementById('sched-period').value) || 0;
+      const ch = {};
+      const s = document.getElementById('sched-salary').value;
+      if (s) ch['salaryDefault'] = parseFloat(s);
+      const l = document.getElementById('sched-living').value;
+      if (l) ch['livingExpenseDefault'] = parseFloat(l);
+      const d = document.getElementById('sched-debt').value;
+      if (d) ch['debtRepaymentDefault'] = parseFloat(d);
+      const e = document.getElementById('sched-emergency').value;
+      if (e) ch['emergencyFundTarget'] = parseFloat(e);
+      scheduledDefaultChanges.push({ period: p, changes: ch });
+      appendLog(`Scheduled ${p}`);
+    }
+    
+    function runApp() {
+        // Event listeners
+        document.getElementById('btn-update').onclick = () => biweeklyUpdate(document.getElementById('update-paid').checked);
+        document.getElementById('btn-adjust').onclick = adjust;
+        document.getElementById('btn-emergency').onclick = handleEmergency;
+        document.getElementById('btn-set-defaults').onclick = setDefaults;
+        document.getElementById('btn-schedule-change').onclick = scheduleChange;
+        document.getElementById('btn-est-save').onclick = () => {
+          const t = parseFloat(document.getElementById('est-target').value) || 0;
+          document.getElementById('est-save').textContent = timeToSave(t);
+        };
+
+        // Init
+        appendLog('Tracker Ready');
+        updateStatus();
+        updateHistory();
+        document.getElementById('est-clear').textContent = timeToClearDebt();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('initial-values-modal');
+      modal.style.display = 'flex';
+
+      document.getElementById('btn-init-start').onclick = () => {
+        // Update state from modal, using current values as fallbacks
+        totalDebt = parseFloat(document.getElementById('init-debt').value) || totalDebt;
+        const initialBalance = parseFloat(document.getElementById('init-balance').value) || (bankBalance + emergencyFund);
+        emergencyFundTarget = parseFloat(document.getElementById('init-emergency-target').value) || emergencyFundTarget;
+        salaryDefault = parseFloat(document.getElementById('init-salary').value) || salaryDefault;
+        livingExpenseDefault = parseFloat(document.getElementById('init-living').value) || livingExpenseDefault;
+        debtRepaymentDefault = parseFloat(document.getElementById('init-debt-repayment').value) || debtRepaymentDefault;
+
+        // Recalculate bank and emergency funds from the total balance
+        emergencyFund = Math.min(initialBalance, emergencyFundTarget);
+        bankBalance = initialBalance - emergencyFund;
+        
+        modal.style.display = 'none';
+        runApp();
+      };
+    });
+  </script>
+</body>
+</html>
